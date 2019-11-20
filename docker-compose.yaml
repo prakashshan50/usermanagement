@@ -1,0 +1,30 @@
+version: '3'
+services:
+
+  usermanagement:
+    container_name: usermanagement
+    image: usermanagement:${VERSION}        
+    restart: always
+    build: 
+       context: .
+       args:
+         - VERSION=${VERSION} 
+    volumes:
+      - ./logs:/usermanagement/logs    
+      - ./src/main/resources/application.properties:/usermanagement/application.properties
+    ports:
+      - 8012:8011
+    depends_on:
+      - ummongo
+
+  ummongo:
+    container_name: ummongo
+    image: mongo:3.6.3
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./ummongo/data/db:/data/db
+    ports:
+        - 27018:27017
+    command: mongod --smallfiles --logpath=/dev/null # --quiet
